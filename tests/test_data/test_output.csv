@@ -1,0 +1,21 @@
+match_date,venue,city,state,neutral_site,indoor,competition,season,id,home_away,score,winner,id_opposition,home_away_opposition,score_opposition,winner_opposition
+2005-02-05T14:00Z,Stade de France,Saint-Denis,Reunion,False,False,Six Nations,2005,9,home,16,True,2,away,9,False
+2005-02-05T14:00Z,Stade de France,Saint-Denis,Reunion,False,False,Six Nations,2005,2,away,9,False,9,home,16,True
+2005-02-05T17:30Z,Principality Stadium,Cardiff,Wales,False,False,Six Nations,2005,4,home,11,True,1,away,9,False
+2005-02-05T17:30Z,Principality Stadium,Cardiff,Wales,False,False,Six Nations,2005,1,away,9,False,4,home,11,True
+2005-02-05T14:00Z,Twickenham Stoop,London,England,False,False,Gallagher Premiership,2005,25901,home,38,True,25900,away,9,False
+2005-02-05T14:00Z,Twickenham Stoop,London,England,False,False,Gallagher Premiership,2005,25900,away,9,False,25901,home,38,True
+2005-02-05T15:00Z,cinch Stadium at Franklin's Gardens,Northampton,England,False,False,Gallagher Premiership,2005,25907,home,20,False,25909,away,21,True
+2005-02-05T15:00Z,cinch Stadium at Franklin's Gardens,Northampton,England,False,False,Gallagher Premiership,2005,25909,away,21,True,25907,home,20,False
+2005-02-05T19:45Z,Recreation Ground,Bath,England,False,False,Gallagher Premiership,2005,25898,home,6,False,25903,away,6,False
+2005-02-05T19:45Z,Recreation Ground,Bath,England,False,False,Gallagher Premiership,2005,25903,away,6,False,25898,home,6,False
+2005-02-06T14:30Z,Stadio Flaminio,Rome,Italy,False,False,Six Nations,2005,20,home,17,False,3,away,28,True
+2005-02-06T14:30Z,Stadio Flaminio,Rome,Italy,False,False,Six Nations,2005,3,away,28,True,20,home,17,False
+2005-02-06T14:30Z,Kingston Park,Newcastle,England,False,False,Gallagher Premiership,2005,25906,home,29,True,25905,away,28,False
+2005-02-06T14:30Z,Kingston Park,Newcastle,England,False,False,Gallagher Premiership,2005,25905,away,28,False,25906,home,29,True
+2005-02-06T15:00Z,Madejski Stadium,Reading,England,False,False,Gallagher Premiership,2005,25904,home,6,False,25908,away,9,True
+2005-02-06T15:00Z,Madejski Stadium,Reading,England,False,False,Gallagher Premiership,2005,25908,away,9,True,25904,home,6,False
+2005-02-12T13:30Z,Stadio Flaminio,Rome,Italy,False,False,Six Nations,2005,20,home,8,False,4,away,38,True
+2005-02-12T13:30Z,Stadio Flaminio,Rome,Italy,False,False,Six Nations,2005,4,away,38,True,20,home,8,False
+2005-02-12T16:00Z,BT Murrayfield,Edinburgh,Scotland,False,False,Six Nations,2005,2,home,13,False,3,away,40,True
+2005-02-12T16:00Z,BT Murrayfield,Edinburgh,Scotland,False,False,Six Nations,2005,3,away,40,True,2,home,13,False

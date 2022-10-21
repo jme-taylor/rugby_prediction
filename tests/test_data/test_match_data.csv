@@ -1,0 +1,11 @@
+match_date,venue,city,state,neutral_site,indoor,team_1_id,team_1_name,team_1_abbreviation,team_1_home_away,team_1_score,team_1_winner,team_2_id,team_2_name,team_2_abbreviation,team_2_home_away,team_2_score,team_2_winner,competition,season
+2005-02-05T14:00Z,Stade de France,Saint-Denis,Reunion,False,False,9,France,FRA,home,16,True,2,Scotland,SCOT,away,9,False,Six Nations,2005
+2005-02-05T17:30Z,Principality Stadium,Cardiff,Wales,False,False,4,Wales,WALES,home,11,True,1,England,ENG,away,9,False,Six Nations,2005
+2005-02-05T14:00Z,Twickenham Stoop,London,England,False,False,25901,Harlequins,HQUIN,home,38,True,25900,Gloucester Rugby,GLOUC,away,9,False,Gallagher Premiership,2005
+2005-02-05T15:00Z,cinch Stadium at Franklin's Gardens,Northampton,England,False,False,25907,Northampton Saints,NTHMP,home,20,False,25909,Saracens,SARAC,away,21,True,Gallagher Premiership,2005
+2005-02-05T19:45Z,Recreation Ground,Bath,England,False,False,25898,Bath Rugby,BATH,home,6,False,25903,Leicester Tigers,LEICS,away,6,False,Gallagher Premiership,2005
+2005-02-06T14:30Z,Stadio Flaminio,Rome,Italy,False,False,20,Italy,ITALY,home,17,False,3,Ireland,IRE,away,28,True,Six Nations,2005
+2005-02-06T14:30Z,Kingston Park,Newcastle,England,False,False,25906,Newcastle Falcons,NEWC,home,29,True,25905,Wasps,WASPS,away,28,False,Gallagher Premiership,2005
+2005-02-06T15:00Z,Madejski Stadium,Reading,England,False,False,25904,London Irish,IRISH,home,6,False,25908,Sale Sharks,SALE,away,9,True,Gallagher Premiership,2005
+2005-02-12T13:30Z,Stadio Flaminio,Rome,Italy,False,False,20,Italy,ITALY,home,8,False,4,Wales,WALES,away,38,True,Six Nations,2005
+2005-02-12T16:00Z,BT Murrayfield,Edinburgh,Scotland,False,False,2,Scotland,SCOT,home,13,False,3,Ireland,IRE,away,40,True,Six Nations,2005
