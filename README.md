@@ -1,2 +1,3 @@
-# rugby_prediction
-Predicting the outcome of rugby matches
+# Rugby Prediction
+
+Predicting the outcome of rugby matches using machine learning.
