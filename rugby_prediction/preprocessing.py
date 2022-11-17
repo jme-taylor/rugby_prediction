@@ -1,5 +1,10 @@
+import numpy as np
 import pandas as pd
 
+from rugby_prediction.constants import (CLUB_COMPETITIONS,
+                                        INTERNATIONAL_COMPETITIONS)
+
+# columns for transforming data
 TEAM_COLUMNS = ['id', 'home_away', 'score', 'winner']
 CORE_COLUMNS = [
     'match_id',
@@ -16,7 +21,9 @@ CORE_COLUMNS = [
 JOINING_COLUMNS = ['unique_id']
 
 
-def transform_raw_data_to_team_level(df: pd.DataFrame) -> pd.DataFrame:
+def transform_raw_data_to_team_level(
+    df: pd.DataFrame, team_level_columns=TEAM_COLUMNS
+) -> pd.DataFrame:
     """Function that turns the raw match data at one row per match into a
     dataframe that is one row per match and team.
 
@@ -34,8 +41,8 @@ def transform_raw_data_to_team_level(df: pd.DataFrame) -> pd.DataFrame:
     core_df = df[CORE_COLUMNS].copy()
 
     # specify column names for team 1 and team 2
-    team_1_columns = ['team_1_' + tc for tc in TEAM_COLUMNS]
-    team_2_columns = ['team_2_' + tc for tc in TEAM_COLUMNS]
+    team_1_columns = ['team_1_' + tc for tc in team_level_columns]
+    team_2_columns = ['team_2_' + tc for tc in team_level_columns]
 
     # filter main dataframe to just these teams
     team_1_df = df[JOINING_COLUMNS + team_1_columns].copy()
@@ -43,10 +50,10 @@ def transform_raw_data_to_team_level(df: pd.DataFrame) -> pd.DataFrame:
 
     # rename the columns so it's cleaner
     team_1_df = team_1_df.rename(
-        columns=dict(zip(team_1_columns, TEAM_COLUMNS))
+        columns=dict(zip(team_1_columns, team_level_columns))
     )
     team_2_df = team_2_df.rename(
-        columns=dict(zip(team_2_columns, TEAM_COLUMNS))
+        columns=dict(zip(team_2_columns, team_level_columns))
     )
 
     # merge team data back to the opposing team
@@ -147,3 +154,66 @@ def drop_nill_draws(df: pd.DataFrame) -> pd.DataFrame:
     filtered_df = df.loc[~nill_draw_filter]
 
     return filtered_df
+
+
+# competitions that play differently to mens 15's
+DEFAULT_COMPETITION_EXLUSION_LIST = [
+    "Women's Rugby World Cup",
+    "Olympic Women's 7s",
+    "Olympic Men's 7s",
+]
+
+
+def drop_competitions(
+    df: pd.DataFrame, comps_to_drop: list = DEFAULT_COMPETITION_EXLUSION_LIST
+) -> pd.DataFrame:
+    """Function to drop competitions that you don't want to use
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        _description_
+    comps_to_drop : list, optional
+        _description_, by default DEFAULT_COMPETITION_EXLUSION_LIST
+
+    Returns
+    -------
+    _df : pd.DataFrame
+        _description_
+    """
+    _df = df.loc[~df['competition'].isin(comps_to_drop)].copy()
+
+    return _df
+
+
+def map_competitions(
+    df: pd.DataFrame, drop_granular: bool = True
+) -> pd.DataFrame:
+    """_summary_
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        _description_
+    drop_granular : bool, optional
+        _description_, by default True
+
+    Returns
+    -------
+    pd.DataFrame
+        _description_
+    """
+    _df = df.copy()
+    _df['international_competition'] = np.where(
+        _df['competition'].isin(INTERNATIONAL_COMPETITIONS), 1, 0
+    )
+    _df['club_competition'] = np.where(
+        _df['competition'].isin(CLUB_COMPETITIONS), 1, 0
+    )
+    all_competitions = INTERNATIONAL_COMPETITIONS + CLUB_COMPETITIONS
+    _df['unknown_competition'] = np.where(
+        ~_df['competition'].isin(all_competitions), 1, 0
+    )
+    if drop_granular:
+        _df = _df.drop(columns='competition')
+    return _df
