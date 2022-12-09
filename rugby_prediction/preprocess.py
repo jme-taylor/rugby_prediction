@@ -1,4 +1,4 @@
-from typing import Self
+from typing import Any
 
 import numpy as np
 import pandas as pd
@@ -28,6 +28,19 @@ JOINING_COLUMNS = ['unique_id']
 
 
 class MatchResultFilter(BaseEstimator, TransformerMixin):
+    """Class to drop matches from a datframe based on the score being a 0-0
+    result.
+
+    Attributes
+    ----------
+    team_1_score_column_name: str
+        The name of the column in the data that contains the score for team 1,
+        by default 'team_1_score'
+    team_2_score_column_name: str
+        The name of the column in the data that contains the score for team 2,
+        by default 'team_2_score'
+    """
+
     def __init__(
         self,
         team_1_score_column_name: str = 'team_1_score',
@@ -36,10 +49,24 @@ class MatchResultFilter(BaseEstimator, TransformerMixin):
         self.team_1_score_column_name = team_1_score_column_name
         self.team_2_score_column_name = team_2_score_column_name
 
-    def fit(self) -> Self:
+    def fit(self) -> Any:
         return self
 
     def transform(self, data: pd.DataFrame) -> pd.DataFrame:
+        """Method that drops the rows with a 0-0 result and returns the
+        filtered dataframe.
+
+        Parameters
+        ----------
+        data : pd.DataFrame
+            A dataframe that you wish to strip matches with 0-0 results from.
+
+        Returns
+        -------
+        data : pd.DataFrame
+            The dataframe that was passed to the method, without any 0-0
+            results in it.
+        """
         data = data[
             ~(
                 (data[self.team_1_score_column_name] == 0)
