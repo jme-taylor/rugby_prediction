@@ -49,3 +49,11 @@ CLUB_COMPETITIONS = [
     'URBA Top 12',
     'National Rugby Championship 2015',
 ]
+
+
+# competitions that play differently to mens 15's
+DEFAULT_COMPETITION_EXLUSION_LIST = [
+    "Women's Rugby World Cup",
+    "Olympic Women's 7s",
+    "Olympic Men's 7s",
+]
