@@ -1,10 +1,36 @@
+from typing import Any
+
 import numpy as np
 import pandas as pd
+from sklearn.base import BaseEstimator, TransformerMixin
 
 from rugby_prediction.constants import (
     CLUB_COMPETITIONS,
     INTERNATIONAL_COMPETITIONS,
 )
+
+
+class RollingAverageScore(BaseEstimator, TransformerMixin):
+    def __init__(
+        self,
+        column_to_avg: str,
+        team_id_column: str,
+        window: int = 5,
+    ) -> None:
+        self.column_to_avg = column_to_avg
+        self.team_id_column = team_id_column
+        self.window = window
+
+    def fit(self) -> Any:
+        return self
+
+    def sort_data(self, dataframe: pd.DataFrame) -> pd.DataFrame:
+        sorted_dataframe = dataframe.sort_values(by='match_date')
+        return sorted_dataframe
+
+    def previous_result(self, dataframe: pd.DataFrame) -> pd.DataFrame:
+
+        pass
 
 
 def create_rolling_average(
