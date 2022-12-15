@@ -1,8 +1,5 @@
-from typing import Any
-
 import numpy as np
 import pandas as pd
-from sklearn.base import BaseEstimator, TransformerMixin
 
 from rugby_prediction.constants import (
     CLUB_COMPETITIONS,
@@ -27,54 +24,128 @@ CORE_COLUMNS = [
 JOINING_COLUMNS = ['unique_id']
 
 
-class MatchResultFilter(BaseEstimator, TransformerMixin):
-    """Class to drop matches from a datframe based on the score being a 0-0
-    result.
+def drop_nill_draws(df: pd.DataFrame) -> pd.DataFrame:
+    """Function to drop 0-0 draws from the data, as these are assumed to be
+    invalid results.
 
-    Attributes
+    Parameters
     ----------
-    team_1_score_column_name: str
-        The name of the column in the data that contains the score for team 1,
-        by default 'team_1_score'
-    team_2_score_column_name: str
-        The name of the column in the data that contains the score for team 2,
-        by default 'team_2_score'
+    df : pd.DataFrame
+        The dataframe which you want to drop 0-0 draws from.
+
+    Returns
+    -------
+    filtered_df: pd.DataFrame
+        The original dataframe, but without any 0-0 draws.
     """
+    nill_draw_filter = (df['team_1_score'] == 0) & (df['team_2_score'] == 0)
 
-    def __init__(
-        self,
-        team_1_score_column_name: str = 'team_1_score',
-        team_2_score_column_name: str = 'team_2_score',
-    ) -> None:
-        self.team_1_score_column_name = team_1_score_column_name
-        self.team_2_score_column_name = team_2_score_column_name
+    filtered_df = df.loc[~nill_draw_filter]
 
-    def fit(self) -> Any:
-        return self
+    return filtered_df
 
-    def transform(self, data: pd.DataFrame) -> pd.DataFrame:
-        """Method that drops the rows with a 0-0 result and returns the
-        filtered dataframe.
 
-        Parameters
-        ----------
-        data : pd.DataFrame
-            A dataframe that you wish to strip matches with 0-0 results from.
+def drop_competitions(
+    df: pd.DataFrame, comps_to_drop: list = DEFAULT_COMPETITION_EXLUSION_LIST
+) -> pd.DataFrame:
+    """Function to drop competitions that you don't want to use
 
-        Returns
-        -------
-        data : pd.DataFrame
-            The dataframe that was passed to the method, without any 0-0
-            results in it.
-        """
-        data = data[
-            ~(
-                (data[self.team_1_score_column_name] == 0)
-                & (data[self.team_2_score_column_name] == 0)
-            )
-        ]
+    Parameters
+    ----------
+    df : pd.DataFrame
+        _description_
+    comps_to_drop : list, optional
+        _description_, by default DEFAULT_COMPETITION_EXLUSION_LIST
 
-        return data
+    Returns
+    -------
+    _df : pd.DataFrame
+        _description_
+    """
+    _df = df.loc[~df['competition'].isin(comps_to_drop)].copy()
+
+    return _df
+
+
+def add_result_columns(dataframe: pd.DataFrame) -> pd.DataFrame:
+    team_1_conditions = [
+        dataframe['team_1_score'] > dataframe['team_2_score'],
+        dataframe['team_1_score'] == dataframe['team_2_score'],
+        dataframe['team_1_score'] < dataframe['team_2_score'],
+    ]
+    team_2_conditions = [
+        dataframe['team_1_score'] < dataframe['team_2_score'],
+        dataframe['team_1_score'] == dataframe['team_2_score'],
+        dataframe['team_1_score'] > dataframe['team_2_score'],
+    ]
+
+    choices = ['win', 'draw', 'loss']
+
+    dataframe['team_1_result'] = np.select(
+        team_1_conditions, choices, default=np.nan
+    )
+    dataframe['team_2_result'] = np.select(
+        team_2_conditions, choices, default=np.nan
+    )
+
+    return dataframe
+
+
+def add_score_against_columns(dataframe: pd.DataFrame) -> pd.DataFrame:
+    dataframe['team_1_against'] = dataframe['team_2_score']
+    dataframe['team_2_against'] = dataframe['team_1_score']
+
+    return dataframe
+
+
+def sort_dataframe(
+    dataframe: pd.DataFrame, sorting_column: str = 'match_date'
+) -> pd.DataFrame:
+    dataframe = dataframe.sort_values(by=sorting_column)
+    return dataframe
+
+
+def previous_value_column(
+    dataframe: pd.DataFrame, column: str, team: str
+) -> pd.Series:
+    if team not in ['team_1_id', 'team_2_id']:
+        raise ValueError('team must be one of "team_1_id" or "team_2_id"')
+
+    dataframe = sort_dataframe(dataframe)
+    previous_value = dataframe.groupby(team)[column].shift(1)
+
+    return previous_value
+
+
+def rolling_average_column(
+    dataframe: pd.DataFrame,
+    column: str,
+    team: str,
+    window: int = 5,
+) -> pd.Series:
+
+    dataframe = sort_dataframe(dataframe)
+    rolling_average = (
+        dataframe.groupby(team)[column]
+        .rolling(window)
+        .mean()
+        .reset_index(level=team, drop=True)
+    )
+
+    return rolling_average
+
+
+def get_median_score(
+    dataframe: pd.DataFrame,
+    team_score_columns: list = ['team_1_score', 'team_2_score'],
+) -> float:
+    total_scores = list()
+    for team_score_column in team_score_columns:
+        total_scores.append(dataframe[team_score_column].tolist())
+
+    median_score = np.median(total_scores)
+
+    return median_score
 
 
 def transform_raw_data_to_team_level(
@@ -126,47 +197,28 @@ def transform_raw_data_to_team_level(
     return output_df
 
 
-def drop_nill_draws(df: pd.DataFrame) -> pd.DataFrame:
-    """Function to drop 0-0 draws from the data, as these are assumed to be
-    invalid results.
-
-    Parameters
-    ----------
-    df : pd.DataFrame
-        The dataframe which you want to drop 0-0 draws from.
-
-    Returns
-    -------
-    filtered_df: pd.DataFrame
-        The original dataframe, but without any 0-0 draws.
-    """
-    nill_draw_filter = (df['team_1_score'] == 0) & (df['team_2_score'] == 0)
-
-    filtered_df = df.loc[~nill_draw_filter]
-
-    return filtered_df
-
-
-def drop_competitions(
-    df: pd.DataFrame, comps_to_drop: list = DEFAULT_COMPETITION_EXLUSION_LIST
+def add_home_column(
+    dataframe: pd.DataFrame,
+    home_away_column: str = 'home_away',
+    drop_original: bool = True,
 ) -> pd.DataFrame:
-    """Function to drop competitions that you don't want to use
+    dataframe['home'] = np.where(
+        dataframe[home_away_column] == 'home', True, False
+    )
 
-    Parameters
-    ----------
-    df : pd.DataFrame
-        _description_
-    comps_to_drop : list, optional
-        _description_, by default DEFAULT_COMPETITION_EXLUSION_LIST
+    if drop_original:
+        dataframe = dataframe.drop(columns=home_away_column)
 
-    Returns
-    -------
-    _df : pd.DataFrame
-        _description_
-    """
-    _df = df.loc[~df['competition'].isin(comps_to_drop)].copy()
+    return dataframe
 
-    return _df
+
+def feature_target_split(
+    dataframe: pd.DataFrame, feature_columns: list, target_column: str
+) -> tuple[pd.DataFrame, pd.Series]:
+    X = dataframe[feature_columns]
+    y = dataframe[target_column]
+
+    return X, y
 
 
 def map_competitions(

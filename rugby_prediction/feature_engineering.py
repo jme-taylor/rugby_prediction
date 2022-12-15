@@ -10,7 +10,38 @@ from rugby_prediction.constants import (
 )
 
 
-class RollingAverageScore(BaseEstimator, TransformerMixin):
+class PreviousValue(BaseEstimator, TransformerMixin):
+    def __init__(self, column: str) -> None:
+        self.column = column
+
+    def fit(self) -> Any:
+        return self
+
+    def sort_data(self, dataframe: pd.DataFrame) -> pd.DataFrame:
+        sorted_dataframe = dataframe.sort_values(by='match_date')
+        return sorted_dataframe
+
+    def transform(self, dataframe: pd.DataFrame) -> pd.DataFrame:
+        sorted_dataframe = self.sort_data(dataframe)
+        self.previous_column_name = f'previous_{self.column}'
+        sorted_dataframe[self.previous_column_name] = sorted_dataframe.groupby(
+            self.team_id_column
+        )[self.column_to_avg].shift(1)
+        return sorted_dataframe
+
+
+class RollingAverage(BaseEstimator, TransformerMixin):
+    """Class to average an attribute (e.g. score, conceded) over a certain
+    window of time.
+
+    Attributes
+    ----------
+    column_to_avg : str
+        The column that you're going to be averaging
+    team_id_column : str
+        _description_
+    """
+
     def __init__(
         self,
         column_to_avg: str,
@@ -24,13 +55,25 @@ class RollingAverageScore(BaseEstimator, TransformerMixin):
     def fit(self) -> Any:
         return self
 
-    def sort_data(self, dataframe: pd.DataFrame) -> pd.DataFrame:
-        sorted_dataframe = dataframe.sort_values(by='match_date')
+    def transform(self, dataframe: pd.DataFrame) -> pd.DataFrame:
+        sorted_dataframe = self.previous_result(dataframe)
+
+        self.rolling_average_column_name = (
+            f'{self.window}_rolling_{self.column_to_avg}'
+        )
+        sorted_dataframe[self.rolling_average_column_name] = (
+            sorted_dataframe.groupby(self.team_id_column)[
+                self.previous_column_name
+            ]
+            .rolling(self.window)
+            .mean()
+            .reset_index(level=self.team_id_column, drop=True)
+        )
+
+        sorted_dataframe = sorted_dataframe.drop(
+            columns=[self.previous_column_name]
+        )
         return sorted_dataframe
-
-    def previous_result(self, dataframe: pd.DataFrame) -> pd.DataFrame:
-
-        pass
 
 
 def create_rolling_average(
